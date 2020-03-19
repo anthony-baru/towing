@@ -11,8 +11,9 @@ module.exports = function (app) {
     });
 
     app.post(
-        "/api/auth/signup",
+        "/api/auth/signup/:token",
         [
+            verifySignUp.checkInviteExistence,
             verifySignUp.checkDuplicateUsernameOrEmail,
             verifySignUp.checkRolesExisted
         ],

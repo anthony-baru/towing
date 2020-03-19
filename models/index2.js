@@ -24,29 +24,26 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.user = require("../models/user.model.js")(sequelize, Sequelize);
+// db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.invite = require("../models/invite.model.js")(sequelize, Sequelize);
 
-db.role.belongsToMany(db.user, {
-    through: "user_roles",
+db.role.belongsToMany(db.invite, {
+    through: "invite_roles",
     foreignKey: "roleId",
-    otherKey: "userId"
+    otherKey: "inviteId"
 });
+// db.user.belongsToMany(db.role, {
+//     through: "user_roles",
+//     foreignKey: "userId",
+//     otherKey: "roleId"
+// });
 
-db.user.belongsToMany(db.role, {
-    through: "user_roles",
-    foreignKey: "userId",
+db.invite.belongsToMany(db.role, {
+    through: "invite_roles",
+    foreignKey: "inviteId",
     otherKey: "roleId"
 });
-
-db.user.hasMany(db.invite, {
-    foreignKey: "invited_by"
-});
-db.invite.belongsTo(db.user, {
-    foreignKey: "invited_by"
-})
-
 
 db.ROLES = ["user", "admin", "moderator"];
 

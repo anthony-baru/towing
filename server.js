@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 
 var corsOptions = {
-    origin: "http://localhost:8081"
+    origin: "http://localhost:8080"
 };
 
 app.use(cors(corsOptions));
@@ -27,26 +27,26 @@ db.sequelize.sync();
 //     console.log('Drop and Resync Db');
 //     initial();
 // });
-// function initial() {
-//     Role.create({
-//         id: 1,
-//         name: "user"
-//     });
+function initial() {
+    Role.create({
+        id: 1,
+        name: "user"
+    });
 
-//     Role.create({
-//         id: 2,
-//         name: "moderator"
-//     });
+    Role.create({
+        id: 2,
+        name: "moderator"
+    });
 
-//     Role.create({
-//         id: 3,
-//         name: "admin"
-//     });
-// }
+    Role.create({
+        id: 3,
+        name: "admin"
+    });
+}
 
 // simple route
 app.get("/", (req, res) => {
-    res.json({ message: "Welcome to apa claim application." });
+    res.json({ message: "Welcome to apa myrescue application." });
 });
 
 // routes

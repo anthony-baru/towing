@@ -2,6 +2,7 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
+const Invite = db.invite;
 
 const Op = db.Sequelize.Op;
 
@@ -12,26 +13,28 @@ exports.signup = (req, res) => {
     // Save User to Database
     User.create({
         username: req.body.username,
-        email: req.body.email,
+        email: req.userEmail,
         password: bcrypt.hashSync(req.body.password, 8)
     })
         .then(user => {
-            if (req.body.roles) {
+            if (req.userRoles) {
                 Role.findAll({
                     where: {
                         name: {
-                            [Op.or]: req.body.roles
+                            [Op.or]: req.userRoles
                         }
                     }
                 }).then(roles => {
                     user.setRoles(roles).then(() => {
                         res.send({ message: "User was registered successfully!" });
+                        Invite.update({ regToken: "registered" }, { where: { regToken: req.regToken } });
                     });
                 });
             } else {
                 // user role = 1
                 user.setRoles([1]).then(() => {
                     res.send({ message: "User was registered successfully!" });
+                    Invite.update({ regToken: "registered" }, { where: { regToken: req.regToken } });
                 });
             }
         })

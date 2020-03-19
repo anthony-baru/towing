@@ -29,4 +29,15 @@ module.exports = function (app) {
         [authJwt.verifyToken, authJwt.isAdmin],
         controller.adminBoard
     );
+
+    //loading the invite page for admin
+    // app.get("/api/auth/invite-user",
+    //     [authJwt.verifyToken, authJwt.isAdmin],
+    //     controller.inviteUserFe
+    // );
+    //sending the invite email 
+    app.post("/api/auth/invite-user",
+        [authJwt.verifyToken, authJwt.isAdmin],
+        controller.inviteUser
+    );
 };

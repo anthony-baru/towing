@@ -1,3 +1,9 @@
+const db = require("../models");
+const config = require("../config/auth.config");
+const Invite = db.invite;
+const Role = db.role;
+
+const Op = db.Sequelize.Op;
 exports.allAccess = (req, res) => {
     res.status(200).send("Public Content.");
 };
@@ -12,4 +18,23 @@ exports.adminBoard = (req, res) => {
 
 exports.moderatorBoard = (req, res) => {
     res.status(200).send("Moderator Content.");
+};
+
+exports.inviteUser = (req, res) => {
+    //send information to db
+    let regtoken = Math.floor(Math.random(10000000) * 10000000);
+    let roles = req.body.roles.toString();
+    Invite.create({
+        email: req.body.email,
+        regToken: regtoken,
+        role: roles,
+        invited_by: req.userId
+    }).then(user => {
+        res.status(200).send({ message: "Invite sent successfully!" })
+    })
+        .catch(err => {
+            res.status(500).send({ message: err.message });
+        });
+
+
 };
