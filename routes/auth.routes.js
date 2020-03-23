@@ -21,4 +21,7 @@ module.exports = function (app) {
     );
 
     app.post("/api/auth/signin", controller.signin);
+
+    app.post("/api/auth/password-reset", controller.password_reset);
+    app.post("/api/auth/password-reset/:resetToken", controller.password_reset_token);
 };
