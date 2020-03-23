@@ -40,7 +40,11 @@ exports.inviteUser = (req, res) => {
                     role: roles,
                     invited_by: req.userId
                 }).then(user => {
-                    res.status(200).send({ message: "Invite sent successfully!" })
+                    let protocol = req.protocol;
+                    const PORT = process.env.PORT || 8080;
+                    let hostname = req.hostname + ':' + PORT;
+                    let registerLink = protocol + '://' + hostname + '/api/auth/signup/' + regtoken
+                    res.status(200).send({ message: "Invite sent successfully!", link: registerLink })
                 })
                     .catch(err => {
                         res.status(500).send({ message: err.message });

@@ -40,4 +40,12 @@ module.exports = function (app) {
         [authJwt.verifyToken, authJwt.isAdmin],
         controller.inviteUser
     );
+
+    app.get("/host", (req, res) => {
+        let protocol = req.protocol;
+        const PORT = process.env.PORT || 8080;
+        let hostname = req.hostname + ':' + PORT;
+
+        return res.send(protocol + '://' + hostname + '/api/auth/signup/token')
+    })
 };
