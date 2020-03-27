@@ -1,6 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const path = require('path');
 const cors = require("cors");
+const sendMail = require('./config/mail.config');
+require('dotenv').config()
+
 
 const app = express();
 
@@ -15,6 +19,9 @@ app.use(bodyParser.json());
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//static folder
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 //loading models
 const db = require("./models");
@@ -46,7 +53,19 @@ function initial() {
 
 // simple route
 app.get("/", (req, res) => {
-    res.json({ message: "Welcome to apa myrescue application." });
+    res.json({ message: "Welcome to apa myrescue application.", data: process.env });
+});
+
+app.get('/email', (req, res) => {
+    // return res.json({ data: req.body });
+    const { email, subject, text } = req.body;
+    sendMail(email, subject, text, (err, data) => {
+        if (err) {
+            res.status(500).json({ message: "Internal Error!", data: data });
+        } else {
+            res.status(200).json({ message: 'Email sent' });
+        }
+    });
 });
 
 // routes

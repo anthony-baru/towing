@@ -3,6 +3,7 @@ const config = require("../config/auth.config");
 const Invite = db.invite;
 const Role = db.role;
 const User = db.user;
+const sendMail = require('../config/mail.config');
 
 const Op = db.Sequelize.Op;
 exports.allAccess = (req, res) => {
@@ -40,11 +41,27 @@ exports.inviteUser = (req, res) => {
                     role: roles,
                     invited_by: req.userId
                 }).then(user => {
-                    let protocol = req.protocol;
+                    const protocol = req.protocol;
                     const PORT = process.env.PORT || 8080;
-                    let hostname = req.hostname + ':' + PORT;
-                    let registerLink = protocol + '://' + hostname + '/api/auth/signup/' + regtoken
-                    res.status(200).send({ message: "Invite sent successfully!", link: registerLink })
+                    const hostname = req.hostname + ':' + PORT;
+                    const registerLink = protocol + '://' + hostname + '/api/auth/signup/' + regtoken
+                    // send email
+                    const email = user.email;
+                    const subject = 'MYRESCUE REGISTRATION';
+                    let html = '<p>You are receiving this email because you have been invited to the Apollo Group Myrescue application.</p>';
+                    html += '<p>Click <a href="' + registerLink + '">here</a> to register.</p></br></br>';
+                    html += '<p>If you are having trouble clicking the link, copy and paste the URL below into your web browser:</p>';
+                    html += registerLink;
+                    sendMail(email, subject, html, (err, data) => {
+                        if (err) {
+                            return res.status(500).json({ message: "Internal Error!", data: data });
+                        } else {
+                            return res.status(200).send({
+                                message: "Invite sent successfully.",
+                                registerLink: registerLink
+                            })
+                        }
+                    });
                 })
                     .catch(err => {
                         res.status(500).send({ message: err.message });

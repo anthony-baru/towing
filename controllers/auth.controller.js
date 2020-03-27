@@ -4,6 +4,8 @@ const User = db.user;
 const Role = db.role;
 const Invite = db.invite;
 const PasswordReset = db.passwordReset;
+const sendMail = require('../config/mail.config');
+
 
 const Op = db.Sequelize.Op;
 
@@ -97,21 +99,37 @@ exports.password_reset = (req, res) => {
         }
     }).then(user => {
         if (!user) {
-            return res.status(200).send({ message: "Email not registered." });
+            return res.status(200).send({ message: "User does not exist!." });
         } else {
             let resetToken = Math.floor(Math.random(10000000) * 10000000);
             let protocol = req.protocol;
             const PORT = process.env.PORT || 8080;
             let hostname = req.hostname + ':' + PORT;
             let resetLink = protocol + '://' + hostname + '/api/auth/password-reset/' + resetToken
+            //save reset info to db
             PasswordReset.create({
                 email: user.email,
                 resetToken: resetToken,
+            }).then(reset => {
+                // send email
+                let email = user.email;
+                let subject = 'PASSWORD RESET';
+                let html = '<p>You are receiving this email because we received a password reset request for your account.</p>';
+                html += '<p>Click <a href="' + resetLink + '">here</a> to reset your password.</p></br></br>';
+                html += '<p>If you are having trouble clicking the link, copy and paste the URL below into your web browser:</p>';
+                html += resetLink;
+                sendMail(email, subject, html, (err, data) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Internal Error!", data: data });
+                    } else {
+                        return res.status(200).send({
+                            message: "Email sent. Click on the link provided.",
+                            resetLink: resetLink
+                        })
+                    }
+                });
+
             });
-            return res.status(200).send({
-                message: "Email sent. Click on the link provided.",
-                resetLink: resetLink
-            })
         }
     })
 };
