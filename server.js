@@ -3,10 +3,14 @@ const bodyParser = require("body-parser");
 const path = require('path');
 const cors = require("cors");
 const sendMail = require('./config/mail.config');
-require('dotenv').config()
-
+const morgan = require('morgan');
+const fs = require('fs');
+require('dotenv').config();
 
 const app = express();
+let accessLogStream = fs.createWriteStream(path.join(__dirname, './logs/access.log'), { flags: 'a' })
+
+app.use(morgan('combined', { stream: accessLogStream }));
 
 var corsOptions = {
     origin: "http://localhost:8080"
@@ -26,6 +30,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 //loading models
 const db = require("./models");
 const Role = db.role;
+const User = db.user;
 
 //for production
 db.sequelize.sync();

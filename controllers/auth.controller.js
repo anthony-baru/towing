@@ -36,8 +36,8 @@ exports.signup = (req, res) => {
             } else {
                 // user role = 1
                 user.setRoles([1]).then(() => {
-                    res.send({ message: "User was registered successfully!" });
                     Invite.update({ regToken: "registered" }, { where: { regToken: req.regToken } });
+                    res.send({ message: "User was registered successfully!" });
                 });
             }
         })
@@ -99,7 +99,7 @@ exports.password_reset = (req, res) => {
         }
     }).then(user => {
         if (!user) {
-            return res.status(200).send({ message: "User does not exist!." });
+            return res.status(400).send({ message: "User does not exist!." });
         } else {
             let resetToken = Math.floor(Math.random(10000000) * 10000000);
             let protocol = req.protocol;
