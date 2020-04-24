@@ -5,6 +5,8 @@ const Role = db.role;
 const Invite = db.invite;
 const PasswordReset = db.passwordReset;
 const sendMail = require('../config/mail.config');
+const axios = require('axios').default;
+
 
 
 const Op = db.Sequelize.Op;
@@ -35,10 +37,11 @@ exports.signup = (req, res) => {
                 });
             } else {
                 // user role = 1
-                user.setRoles([1]).then(() => {
-                    Invite.update({ regToken: "registered" }, { where: { regToken: req.regToken } });
-                    res.send({ message: "User was registered successfully!" });
-                });
+                user.setRoles([1])
+                    .then(() => {
+                        Invite.update({ regToken: "registered" }, { where: { regToken: req.regToken } });
+                        res.send({ message: "User was registered successfully!" });
+                    });
             }
         })
         .catch(err => {

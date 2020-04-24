@@ -5,6 +5,9 @@ const cors = require("cors");
 const sendMail = require('./config/mail.config');
 const morgan = require('morgan');
 const fs = require('fs');
+var bcrypt = require("bcryptjs");
+
+
 require('dotenv').config();
 
 const app = express();
@@ -27,18 +30,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //static folder
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+
 //loading models
 const db = require("./models");
 const Role = db.role;
 const User = db.user;
 
-//for production
-db.sequelize.sync();
+db
+    //for production
+    .sequelize.sync();
 //for dev
-// db.sequelize.sync().then(() => {
+// .sequelize.sync({ force: true }).then(() => {
 //     console.log('Drop and Resync Db');
 //     initial();
 // });
+
 function initial() {
     Role.create({
         id: 1,
@@ -54,6 +60,22 @@ function initial() {
         id: 3,
         name: "admin"
     });
+
+    User.create({
+        id: 1,
+        username: 'anthonybaru',
+        email: 'anthonybaru@gmail.com',
+        password: bcrypt.hashSync('anthonybaru@gmail.com', 8)
+    })
+        .then(defaultUser => {
+            console.log(defaultUser);
+            return defaultUser;
+        })
+        .then(defaultUser => {
+            defaultUser.setRoles([3]);
+            console.log(defaultUser);
+        })
+        .catch(err => console.log(err))
 }
 
 // simple route
