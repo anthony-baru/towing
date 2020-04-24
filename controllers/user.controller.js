@@ -59,7 +59,7 @@ exports.inviteUser = (req, res) => {
                             return res.status(500).json({ message: "Internal Error!", data: data });
                         } else {
                             return res.status(200).send({
-                                message: "Invite sent successfully.";
+                                message: "Invite sent successfully."
                             })
                         }
                     });
